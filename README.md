@@ -1,10 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
 <body>
     <p align='center'><img height='400' src = 'https://user-images.githubusercontent.com/31500911/143410521-b2653b16-0ee9-46e7-9c5c-7a8b2262a3d1.png'></p>
     <br>
