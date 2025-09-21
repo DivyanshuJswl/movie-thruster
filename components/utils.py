@@ -17,7 +17,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Constants
-API_KEY = os.getenv('API_KEY', '267c1b3158c38eaca2695696fd831f59')
+API_KEY = os.getenv('API_KEY')
 POSTER_PLACEHOLDER = "https://res.cloudinary.com/dh5cebjwj/image/upload/v1758476649/download_idywpr.png"
 ERROR_POSTER = "https://via.placeholder.com/200x300?text=Error+Loading"
 
