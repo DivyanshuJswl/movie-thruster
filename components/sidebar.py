@@ -10,8 +10,8 @@ def make_sidebar():
         
         # Navigation
         st.subheader("Navigation")
-        menu_options = ['Recommend Similar Movies', 'Recommend by Emotions', 'Movie Details', 
-                       'Browse All Movies', 'My Watchlist', 'My Preferences', 'Dashboard']
+        menu_options = ['Dashboard', 'Recommend Similar Movies', 'Recommend by Emotions', 'Movie Details', 
+                       'Browse All Movies', 'My Watchlist', 'My Preferences']
         selected = option_menu(
             menu_title=None,
             options=menu_options,

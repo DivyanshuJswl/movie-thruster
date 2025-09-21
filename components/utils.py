@@ -21,7 +21,6 @@ API_KEY = os.getenv('API_KEY')
 POSTER_PLACEHOLDER = "https://res.cloudinary.com/dh5cebjwj/image/upload/v1758476649/download_idywpr.png"
 ERROR_POSTER = "https://via.placeholder.com/200x300?text=Error+Loading"
 
-# Initialize session state variables
 def init_session_state():
     for key in ['show_all_recommendations', 'movie_number', 'selected_movie_name', 
                 'user_menu', 'recent_recommendations', 'poster_cache', 
@@ -34,9 +33,10 @@ def init_session_state():
                 st.session_state[key] = []
             elif key in ['movies_loaded', 'similarity_loaded']:
                 st.session_state[key] = False
+            elif key == 'movie_number':
+                st.session_state[key] = 0   # 👈 force integer
             else:
                 st.session_state[key] = None
-
 # Initialize the database
 def init_db():
     conn = sqlite3.connect("movies.db")
@@ -296,47 +296,56 @@ async def fetch_multiple_posters(movie_ids):
         results = await asyncio.gather(*tasks)
         return results
 
-# Movie card component for consistent UI
+# Movie card component with genre badges
 def movie_card(movie_title, poster_url, rating, genres, release_date, overview, width=200, movie_id=None, show_add_button=False):
     with st.container():
-        # Card container with border
-        st.markdown(f"""
-        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin: 8px 0; height: 100%;">
-            <h4 style="margin-top: 0; margin-bottom: 8px; font-size: 16px;">{movie_title}</h4>
-        </div>
-        """, unsafe_allow_html=True)
+        # Main card container
+        # st.markdown(f"""
+        # <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin: 8px 0; background-color: white;">
+        # """, unsafe_allow_html=True)
         
         col1, col2 = st.columns([1, 2])
+        
         with col1:
-            st.image(poster_url, width=width)
+            # Poster image
+            st.image(poster_url, width=width, use_column_width=True)
             
+            # Rating below poster
+            if rating and rating > 0:
+                stars = "⭐" * min(5, int(rating / 2))
+                st.caption(f"{stars} ({rating:.1f}/10)")
+            
+            # Add to watchlist button
             if show_add_button and movie_id:
-                if st.button("➕ Add to Watchlist", key=f"add_{movie_id}", use_container_width=True):
+                if st.button("➕ Watchlist", key=f"add_{movie_id}", use_container_width=True):
                     add_to_watchlist(movie_id, movie_title)
                     st.success(f"Added {movie_title} to watchlist!")
         
         with col2:
-            # Rating with stars
-            stars = "⭐" * int(rating / 2)
-            st.caption(f"{stars} ({rating}/10)")
-            
-            # Genres as tags
-            if genres and genres[0] != "Unknown":
-                genres_html = " ".join([f'<span style="background-color: #f0f2f6; padding: 2px 6px; border-radius: 8px; margin: 1px; font-size: 10px; display: inline-block;">{genre}</span>' for genre in genres[:2]])
-                st.markdown(genres_html, unsafe_allow_html=True)
+            # Movie title
+            st.markdown(f"**{movie_title}**")
             
             # Release date
-            if release_date != "Unknown":
+            if release_date and release_date != "Unknown":
                 try:
                     release_date_formatted = datetime.strptime(release_date, "%Y-%m-%d").strftime("%d %b %Y")
                     st.caption(f"Released: {release_date_formatted}")
                 except:
                     st.caption(f"Released: {release_date}")
             
-            # Overview with expander
+            # Genres as badges
+            
+            if genres and genres[0] != "Unknown":
+                badges_html = " ".join([f'<span style="background-color: #242c3b; padding: 4px 8px; border-radius: 12px; margin: 2px; font-size: 11px; display: inline-block;">{genre}</span>' for genre in genres[:2]])
+                st.markdown(badges_html, unsafe_allow_html=True)
+                st.write("")  # Add some spacing
+            
+            # Overview with limited text
             if overview and overview != "No overview available":
-                limited_overview = limit_overview(overview, 80)
-                st.caption(limited_overview)
+                limited_overview = limit_overview(overview, 100)
+                st.write(limited_overview)
+        
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # Limit overview text
 def limit_overview(overview, char_limit=100):
