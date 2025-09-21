@@ -1,0 +1,10 @@
+Dataset/
+movies.db
+__pycache__/
+users.db
+data/similarity.pkl
+data/__pycache__/
+venv/
+.env
+data/movie_dict.pkl
+components/__pycache__/
